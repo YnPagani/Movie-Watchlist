@@ -17,6 +17,8 @@ SELECT_WATCHED_MOVIES = "SELECT * FROM movies WHERE watched = 1;"
 
 SET_MOVIE_WATCHED = "UPDATE movies SET watched = 1 WHERE title = ?;"
 
+DELETE_MOVIE = "DELETE FROM movies WHERE title = ?;"
+
 # methods ---------------------------------------------------------------------
 
 connection = sqlite3.connect("data.db")
@@ -37,7 +39,7 @@ def get_movies(upcoming: bool = False):
         cursor = connection.cursor()
 
         if upcoming:
-            # Gets the timestamp since 1-Jan- 1970 till this instant to compare
+            # Gets the timestamp since 1-Jan-1970 till this instant to compare
             # with the movie timestamp.
             today_timestamp = datetime.datetime.today().timestamp()
             cursor.execute(SELECT_UPCOMING_MOVIES, (today_timestamp,))
@@ -57,3 +59,8 @@ def get_watched_movies():
         cursor = connection.cursor()
         cursor.execute(SELECT_WATCHED_MOVIES)
         return cursor.fetchall()
+
+
+def del_movie(title: str):
+    with connection:
+        connection.execute(DELETE_MOVIE, (title,))
