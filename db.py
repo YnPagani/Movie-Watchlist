@@ -1,11 +1,10 @@
 import sqlite3
 import datetime
 
-# Queries
-CREATE_MOVIES_TABLE = """CREATE TABLE IF NOT EXIST movies(
-    title TEXT,
-    release_timestamp REAL,
-    watched INTEGER);"""
+# Queries ---------------------------------------------------------------------
+
+CREATE_MOVIES_TABLE = "CREATE TABLE IF NOT EXISTS movies (title TEXT, " \
+                      "release_timestamp REAL, watched INTEGER); "
 
 INSERT_MOVIES = "INSERT INTO movies(title, release_timestamp, watched) " \
                 "VALUES (?,?,0);"
@@ -18,7 +17,8 @@ SELECT_WATCHED_MOVIES = "SELECT * FROM movies WHERE watched = 1;"
 
 SET_MOVIE_WATCHED = "UPDATE movies SET watched = 1 WHERE title = ?;"
 
-# methods
+# methods ---------------------------------------------------------------------
+
 connection = sqlite3.connect("data.db")
 
 
@@ -49,10 +49,10 @@ def get_movies(upcoming: bool = False):
 
 def watch_movies(title: str):
     with connection:
-        connection.execute(SELECT_WATCHED_MOVIES, (title,))
+        connection.execute(SET_MOVIE_WATCHED, (title,))
 
 
-def get_watch_movies():
+def get_watched_movies():
     with connection:
         cursor = connection.cursor()
         cursor.execute(SELECT_WATCHED_MOVIES)
