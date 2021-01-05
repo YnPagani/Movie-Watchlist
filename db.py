@@ -3,21 +3,26 @@ import datetime
 
 # Queries ---------------------------------------------------------------------
 
-CREATE_MOVIES_TABLE = "CREATE TABLE IF NOT EXISTS movies (title TEXT, " \
-                      "release_timestamp REAL, watched INTEGER); "
+CREATE_MOVIES_TABLE = "CREATE TABLE IF NOT EXISTS movies(title TEXT, " \
+                      "release_timestamp REAL); "
 
-INSERT_MOVIES = "INSERT INTO movies(title, release_timestamp, watched) " \
-                "VALUES (?,?,0);"
+CREATE_WATCHLIST_TABLE = "CREATE TABLE IF NOT EXISTS watched(watcher_name " \
+                         "TEXT, title TEXT); "
+
+INSERT_MOVIES = "INSERT INTO movies(title, release_timestamp) " \
+                "VALUES (?,?);"
+
+INSERT_WATCHED_MOVIE = "INSERT INTO watched(watcher_name, title) VALUES (?,?);"
+
+DELETE_MOVIE = "DELETE FROM movies WHERE title = ?;"
 
 SELECT_ALL_MOVIES = "SELECT * FROM movies;"
 
 SELECT_UPCOMING_MOVIES = "SELECT * FROM movies WHERE release_timestamp > ?;"
 
-SELECT_WATCHED_MOVIES = "SELECT * FROM movies WHERE watched = 1;"
+SELECT_WATCHED_MOVIES = "SELECT * FROM watched WHERE watcher_name = ?;"
 
 SET_MOVIE_WATCHED = "UPDATE movies SET watched = 1 WHERE title = ?;"
-
-DELETE_MOVIE = "DELETE FROM movies WHERE title = ?;"
 
 # methods ---------------------------------------------------------------------
 
@@ -27,6 +32,7 @@ connection = sqlite3.connect("data.db")
 def create_tables():
     with connection:
         connection.execute(CREATE_MOVIES_TABLE)
+        connection.execute(CREATE_WATCHLIST_TABLE)
 
 
 def add_movie(title: str, release_timestamp: float):
@@ -49,15 +55,16 @@ def get_movies(upcoming: bool = False):
         return cursor.fetchall()
 
 
-def watch_movies(title: str):
+def watch_movies(username: str, title: str):
     with connection:
-        connection.execute(SET_MOVIE_WATCHED, (title,))
+        connection.execute(DELETE_MOVIE, (title,))
+        connection.execute(INSERT_WATCHED_MOVIE, (username, title))
 
 
-def get_watched_movies():
+def get_watched_movies(username: str):
     with connection:
         cursor = connection.cursor()
-        cursor.execute(SELECT_WATCHED_MOVIES)
+        cursor.execute(SELECT_WATCHED_MOVIES, (username,))
         return cursor.fetchall()
 
 

@@ -14,8 +14,9 @@ def prompt_add_movie():
 
 
 def prompt_watch_movie():
+    username = input("Who watched the movie?: ")
     title = input("Movie title: ")
-    db.watch_movies(title)
+    db.watch_movies(username, title)
 
 
 def print_movies(header: str, movies: list):
@@ -28,6 +29,16 @@ def print_movies(header: str, movies: list):
         movie_date = datetime.datetime.fromtimestamp(movie[TIMESTAMP])
         human_date = movie_date.strftime("%d-%b-%Y")
         print(f"{movie[TITLE]} (on {human_date})")
+    print("---\n")
+
+
+def print_watched_movies(username: str, movies: list):
+    # Indexes
+    TITLE = 1
+
+    print(f"---{username.upper()} WATCHED MOVIE LIST---")
+    for movie in movies:
+        print(f"{movie[TITLE]}")
     print("---\n")
 
 
@@ -61,8 +72,9 @@ while (user_input := input(menu)) != "6":
         prompt_watch_movie()
 
     elif user_input == "5":
-        movies = db.get_watched_movies()
-        print_movies("WATCHED", movies)
+        username = input("Username: ")
+        movies = db.get_watched_movies(username)
+        print_watched_movies(username, movies)
 
     else:
         print("Invalid input, try again")
