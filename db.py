@@ -1,5 +1,11 @@
-import sqlite3
+import os
 import datetime
+import psycopg2
+
+from dotenv import load_dotenv
+
+# Will make environment variables available for us
+load_dotenv()
 
 # Queries ---------------------------------------------------------------------
 CREATE_USERS_TABLE = """CREATE TABLE IF NOT EXISTS users(
@@ -44,7 +50,7 @@ SET_MOVIE_WATCHED = "UPDATE movies SET watched = 1 WHERE title = ?;"
 
 # methods ---------------------------------------------------------------------
 
-connection = sqlite3.connect("data.db")
+connection = psycopg2.connect(os.environ["DATABASE_URL"])
 
 
 def create_tables():
